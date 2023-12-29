@@ -17,7 +17,7 @@ public class TasksTest {
     public void setUp() throws InterruptedException, MalformedURLException {
         page = new TasksPages();
         page.configurarDriver();
-        page.abrirNavegador("http://localhost:8001/tasks/");
+        page.abrirNavegador("http://192.168.56.1:8001/tasks/");
     }
 
     @Test
