@@ -1,70 +1,65 @@
 package br.testesFuncionais;
 
+import java.net.MalformedURLException;
+
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import br.pages.TasksPages;
 
 public class TasksTest {
 
-	TasksPages page = new TasksPages();
+    private TasksPages page;
 
-	public void acessarAplicacao() {
-		page.abrirNavegador("http://localhost:8001/tasks/");
-	}
+    @Before
+    public void setUp() throws InterruptedException, MalformedURLException {
+        page = new TasksPages();
+        page.configurarDriver();
+        page.abrirNavegador("http://localhost:8001/tasks/");
+    }
 
-	@Test
-	public void deveSalvarTaskComSucesso() throws InterruptedException {
-		acessarAplicacao();
+    @Test
+    public void deveSalvarTaskComSucesso() throws InterruptedException {
+        page.clicarAddTodo();
+        page.setTask("TarefaTest");
+        page.setDataFutura(2);
+        page.clicarSalvar();
 
-		page.clicarAddTodo();
-		page.setTask("TarefaTest");
-		page.setDataFutura(2);
-		page.clicarSalvar();
+        Assert.assertEquals("Success!", page.getValidaSucesso());
+    }
 
-		Assert.assertEquals("Success!", page.getValidaSucesso());
+    @Test
+    public void deveValidarCriticaAoInserirTaskComDataPassada() throws InterruptedException {
+        page.clicarAddTodo();
+        page.setTask("TarefaTest");
+        page.setDataPassada(2);
+        page.clicarSalvar();
 
-		page.fecharNavegador();
-	}
+        Assert.assertEquals("Due date must not be in past", page.getValidaSucesso());
+    }
 
-	@Test
-	public void deveValidarCriticaAoInserirTaskComDataPassada() throws InterruptedException {
-		acessarAplicacao();
+    @Test
+    public void deveValidarCriticaAoInserirTaskSemDescricao() throws InterruptedException {
+        page.clicarAddTodo();
+        page.dataAtualFormatadoComBarras();
+        page.clicarSalvar();
 
-		page.clicarAddTodo();
-		page.setTask("TarefaTest");
-		page.setDataPassada(2);
-		page.clicarSalvar();
+        Assert.assertEquals("Fill the task description", page.getValidaSucesso());
+    }
 
-		Assert.assertEquals("Due date must not be in past", page.getValidaSucesso());
+    @Test
+    public void deveValidarCriticaAoInserirTaskSemData() throws InterruptedException {
+        page.clicarAddTodo();
+        page.setTask("TarefaTest");
+        page.clicarSalvar();
 
-		page.fecharNavegador();
-	}
+        Assert.assertEquals("Fill the due date", page.getValidaSucesso());
+    }
 
-	@Test
-	public void deveValidarCriticaAoInserirTaskSemDescricao() throws InterruptedException {
-		acessarAplicacao();
-
-		page.clicarAddTodo();
-		page.dataAtualFormatadoComBarras();
-		page.clicarSalvar();
-
-		Assert.assertEquals("Fill the task description", page.getValidaSucesso());
-
-		page.fecharNavegador();
-	}
-
-	@Test
-	public void deveValidarCriticaAoInserirTaskSemData() throws InterruptedException {
-		acessarAplicacao();
-
-		page.clicarAddTodo();
-		page.setTask("TarefaTest");
-		page.clicarSalvar();
-
-		Assert.assertEquals("Fill the due date", page.getValidaSucesso());
-
-		page.fecharNavegador();
-	}
-
+    @After
+    public void tearDown() {
+        page.fecharNavegador();
+    }
 }
